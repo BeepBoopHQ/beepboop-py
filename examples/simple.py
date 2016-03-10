@@ -2,7 +2,6 @@ from __future__ import print_function
 import sys
 import os
 import pprint
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 import beepboop
 

@@ -12,8 +12,8 @@ log_level = os.getenv("LOG_LEVEL", "INFO")
 logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', level=log_level)
 logger = logging.getLogger(__name__)
 
-sys.path.append('/Users/skud/projects/src/github.com/BeepBoopHQ/websocket-client')
 import websocket
+import random
 
 
 class BeepBoop(object):
@@ -43,10 +43,15 @@ class BeepBoop(object):
     def handlers(self, handler_funcs_dict):
         self.handler_funcs = handler_funcs_dict
 
+    
     def _connect(self):
-        self.iter += 1
-        print ('iteration: ' + str(self.iter))
-        self.ws_app.run_forever()
+        # while loop makes sure we retry to connect on server down or network failure
+        while True:
+            self.ws_app.run_forever()
+            self.iter += 1
+            logging.debug('reconnecting attempt: ' + str(self.iter))
+            expBackoffSleep(self.iter, 32)
+
 
     def on_message(self, ws, message):
         if self.handler_funcs['on_message']:
@@ -60,14 +65,11 @@ class BeepBoop(object):
         if self.handler_funcs['on_close']:
             self.handler_funcs['on_close'](ws)
 
-        # must be connected to the resourcer so we need to keep "retrying".
-        # NOTE: websocket lib should handle cleanup but i'm seeing leaking
-        time.sleep(1)
-        self._connect()
-
     def on_open(self, ws):
         self.ws_conn = ws
         self._authorize()
+        # reset to 0 since we've reopened a connection
+        self.iter = 0 
         if self.handler_funcs['on_open']:
             self.handler_funcs['on_open'](ws)
 
@@ -88,3 +90,10 @@ class BeepBoop(object):
             exit()
 
         return v
+
+ # Use binary exponential backoff to desynchronize client requests.
+ # As described by: https://cloud.google.com/storage/docs/exponential-backoff
+def expBackoffSleep(n, max_backoff_time):
+    time_to_sleep = min(random.random() * (2**n), max_backoff_time)
+    logging.debug('time to sleep: ' + str(time_to_sleep))
+    time.sleep(time_to_sleep)
