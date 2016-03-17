@@ -1,9 +1,27 @@
-from __future__ import print_function
+#from __future__ import print_function
 import sys
 import os
 import pprint
 
 import beepboop
+
+def spawn_bot():
+    return MockBot()
+
+class MockBot(object):
+    def __init__(self):
+        self.resource = None
+
+    def start(self, resource):
+        self.resource = resource
+        print "Started Bot for ResourceID: {}".format(self.resource['resourceID'])
+        # this is where you'd setup your websocket rtm connection to Slack using token
+
+    def stop(self, resource):
+        print "Stopped Bot for ResourceID: {}".format(self.resource['resourceID'])
+        self.resource = None
+        # this is where you'd close your Slack socket connection, and save any context or data
+
 
 if __name__ == "__main__":
 
@@ -55,6 +73,6 @@ if __name__ == "__main__":
             ('on_close', on_close),
         ])
 
-    bp = beepboop.BeepBoop()
+    bp = beepboop.BeepBoop(spawn_bot)
     bp.handlers(handler_funcs)
     bp.start()
