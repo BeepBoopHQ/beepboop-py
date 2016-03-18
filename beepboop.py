@@ -124,8 +124,11 @@ class BotResources(object):
 
     def update_bot_resource(self, res, spawn_bot):
         logging.debug("Updating bot res: {}".format(res))
-        if res['resourceID'] in self.resource:
-            self.resource[res['resourceID']] = (bot, res)
+        if res['resourceID'] in self.resources:
+            self.resources[res['resourceID']].stop()
+            runnableBot = BotRunner(spawn_bot(), res)
+            self.resources[res['resourceID']] = runnableBot
+            runnableBot.start()
         else:
             logging.error("Failed to find resourceID: {} in resources to update.".format(res['resourceID']))
 
@@ -145,7 +148,7 @@ class BotResources(object):
 class BotRunner(threading.Thread):
     def __init__(self, bot, resource):
         self._stopevent = threading.Event()
-        self._sleepperiod = 0.100 # 100 ms
+        self._sleepperiod = 1.0 # 1 second
         threading.Thread.__init__(self)
         self.setDaemon(True) # thread will stop if main process is killed
         self.bot = bot
