@@ -25,7 +25,7 @@ def expBackoffSleep(n, max_backoff_time):
 
 
 class BeepBoop(object):
-    def __init__(self, spawn_bot, token=None, pod_id=None, resourcer=None):
+    def __init__(self, bot_manager=None, token=None, pod_id=None, resourcer=None):
         self.token = self._getprop(token, "BEEPBOOP_TOKEN")
         self.pod_id = self._getprop(pod_id, "BEEPBOOP_ID")
         self.resourcer = self._getprop(resourcer, "BEEPBOOP_RESOURCER")
@@ -35,8 +35,7 @@ class BeepBoop(object):
         self.handler_funcs = None
         self.iter = 0
 
-        self.spawn_bot = spawn_bot
-        self.resources = BotResources()
+        self.bot_manager = bot_manager
 
     def start(self):
         logging.info('Connecting to Beep Boop Resourcer server: ' + self.resourcer)
@@ -66,7 +65,8 @@ class BeepBoop(object):
         msg = json.loads(message)
         if self.handler_funcs['on_message']:
             self.handler_funcs['on_message'](ws, msg)
-        self._handle_message(ws, msg)
+        if self.bot_manager is not None:
+            self._handle_message(ws, msg)
 
     def on_error(self, ws, error):
         if self.handler_funcs['on_error']:
@@ -86,11 +86,11 @@ class BeepBoop(object):
 
     def _handle_message(self, ws, msg):
         if msg['type'] == 'add_resource':
-            self.resources.add_bot_resource(msg, self.spawn_bot)
+            self.bot_manager.add_bot_resource(msg)
         elif msg['type'] == 'update_resource':
-            self.resources.update_bot_resource(msg, self.spawn_bot)
+            self.bot_manager.update_bot_resource(msg)
         elif msg['type'] == 'remove_resource':
-            self.resources.remove_bot_resource(msg['resourceID'])
+            self.bot_manager.remove_bot_resource(msg['resourceID'])
         else:
             logging.warn('Unhandled Resource messsage type: {}'.format(msg['type']))
 
@@ -111,22 +111,23 @@ class BeepBoop(object):
         return v
 
 
-class BotResources(object):
-    def __init__(self):
+class BotManager(object):
+    def __init__(self, spawn_bot):
+        self.spawn_bot = spawn_bot
         self.resources = {}
 
-    def add_bot_resource(self, res, spawn_bot):
+    def add_bot_resource(self, res):
         logging.debug("Adding bot resource: {}".format(res))
         resID = res['resourceID']
-        runnableBot = BotRunner(spawn_bot(), res)
+        runnableBot = BotRunner(self.spawn_bot(), res)
         self.resources[resID] = runnableBot
         runnableBot.start()
 
-    def update_bot_resource(self, res, spawn_bot):
+    def update_bot_resource(self, res):
         logging.debug("Updating bot res: {}".format(res))
         if res['resourceID'] in self.resources:
             self.resources[res['resourceID']].stop()
-            runnableBot = BotRunner(spawn_bot(), res)
+            runnableBot = BotRunner(self.spawn_bot(), res)
             self.resources[res['resourceID']] = runnableBot
             runnableBot.start()
         else:

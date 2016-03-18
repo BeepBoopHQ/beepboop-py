@@ -73,6 +73,11 @@ if __name__ == "__main__":
             ('on_close', on_close),
         ])
 
-    bp = beepboop.BeepBoop(spawn_bot)
+    # optional to use our bot manager to spawn instances of your bot in daemon threads;
+    # bot developer can choose instead to listen to the websockect messages above and
+    # write their own bot per resource manager or integrate with a 3rd party client that does
+    botManager = beepboop.BotManager(spawn_bot)
+
+    bp = beepboop.BeepBoop(botManager)
     bp.handlers(handler_funcs)
     bp.start()
