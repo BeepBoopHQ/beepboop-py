@@ -6,9 +6,9 @@ import pprint
 import beepboop
 
 def spawn_bot():
-    return MockBot()
+    return SampleBot()
 
-class MockBot(object):
+class SampleBot(object):
     def __init__(self):
         self.resource = None
 
