@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     # optional to use our bot manager to spawn instances of your bot in daemon threads;
     # bot developer can choose instead to listen to the websockect messages above and
-    # write their own bot per resource manager or integrate with a 3rd party client that does
+    # write their own bot per resource manager or integrate with a 3rd party library that does
     botManager = beepboop.BotManager(spawn_bot)
 
     bp = beepboop.BeepBoop(botManager)
