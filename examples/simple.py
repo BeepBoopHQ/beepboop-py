@@ -1,9 +1,11 @@
 #from __future__ import print_function
-import sys
 import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 import pprint
 
-import beepboop
+from beepboop import resourcer
+from beepboop import bot_manager
 
 def spawn_bot():
     return SampleBot()
@@ -76,8 +78,8 @@ if __name__ == "__main__":
     # optional to use our bot manager to spawn instances of your bot in daemon threads;
     # bot developer can choose instead to listen to the websockect messages above and
     # write their own bot per resource manager or integrate with a 3rd party library that does
-    botManager = beepboop.BotManager(spawn_bot)
+    botManager = bot_manager.BotManager(spawn_bot)
 
-    bp = beepboop.BeepBoop(botManager)
+    bp = resourcer.Resourcer(botManager)
     bp.handlers(handler_funcs)
     bp.start()
