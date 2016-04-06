@@ -13,12 +13,12 @@ You can optionally make use of the `BotManager` class, which expects your bot to
 ## Use
 
 ### Testing your bot locally
-**TODO: Add link to multi-team article**
+Please read this [document](https://beepboophq.com/docs/article/resourcer-api) to understand the responsibilities of the Resourcer API.
 
 At a minimum, the client needs the following environment variables set which can be obtained from the development area of the http://beebboophq.com site.
 
   * `BEEPBOOP_RESOURCER` -- url to the Beep Boop Server
-  * `BEEPBOOP_TOKEN` -- authentication toke for Beep Boop Server
+  * `BEEPBOOP_TOKEN` -- authentication token for Beep Boop Server
   * `BEEPBOOP_ID` -- unique identifier for your bot process
 
 In production, these values will be set automatically.
@@ -137,11 +137,11 @@ Then do `pip install requirements.txt`
 
 You will need the following env vars set. In Prod, these would be passed in via Beep Boop.
 
-`export BEEPBOOP_TOKEN=foo`
+`BEEPBOOP_TOKEN`, `BEEPBOOP_ID`, and `BEEPBOOP_RESOURCER` and you can get the appropriate values for these by going to the `Dev Mode` tab under your project on BeepBoop:
 
-`export BEEPBOOP_ID=bar`
+> e.g. https://beepboophq.com/0_o/my-projects/{your-project-id}/develop
 
-`export BEEPBOOP_RESOURCER=ws://localhost:9000/ws` -- recommend using the [Beep Boop dev-console](https://github.com/BeepBoopHQ/dev-console) and setting this value to it.
 
-Run `python ./examples/simple.py` which registers listeners as a consuming app might.  Note you may need to set `export PYTHONPATH=./beepboop/` so that
-it can properly import the beepboop module.
+Run `python ./examples/simple.py` which registers listeners as a consuming app might.
+
+Then you can `Add Teams` with varying config and listen for the messages from the Resourcer.
