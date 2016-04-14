@@ -7,10 +7,6 @@ import websocket
 import random
 import logging
 
-log_level = os.getenv("LOG_LEVEL", "INFO")
-logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', level=log_level)
-logger = logging.getLogger(__name__)
-
 
  # Use binary exponential backoff to desynchronize client requests.
  # As described by: https://cloud.google.com/storage/docs/exponential-backoff
