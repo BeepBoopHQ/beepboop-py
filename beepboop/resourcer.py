@@ -76,7 +76,7 @@ class Resourcer(object):
         self.ws_conn = ws
         self._authorize()
         # reset to 0 since we've reopened a connection
-        self.iter = 0 
+        self.iter = 0
         if self.handler_funcs is not None and 'on_open' in self.handler_funcs:
             self.handler_funcs['on_open'](ws)
 
@@ -87,6 +87,8 @@ class Resourcer(object):
             self.bot_manager.update_bot_resource(msg)
         elif msg['type'] == 'remove_resource':
             self.bot_manager.remove_bot_resource(msg['resourceID'])
+        elif 'on_{}'.format(msg['type']) in self.handler_funcs.keys():
+            self.handler_funcs['on_{}'.format(msg['type'])](ws, msg)
         else:
             logging.warn('Unhandled Resource messsage type: {}'.format(msg['type']))
 
