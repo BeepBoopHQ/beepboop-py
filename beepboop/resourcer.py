@@ -7,10 +7,6 @@ import websocket
 import random
 import logging
 
-log_level = os.getenv("LOG_LEVEL", "INFO")
-logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', level=log_level)
-logger = logging.getLogger(__name__)
-
 
  # Use binary exponential backoff to desynchronize client requests.
  # As described by: https://cloud.google.com/storage/docs/exponential-backoff
@@ -76,7 +72,7 @@ class Resourcer(object):
         self.ws_conn = ws
         self._authorize()
         # reset to 0 since we've reopened a connection
-        self.iter = 0 
+        self.iter = 0
         if self.handler_funcs is not None and 'on_open' in self.handler_funcs:
             self.handler_funcs['on_open'](ws)
 
@@ -87,6 +83,8 @@ class Resourcer(object):
             self.bot_manager.update_bot_resource(msg)
         elif msg['type'] == 'remove_resource':
             self.bot_manager.remove_bot_resource(msg['resourceID'])
+        elif 'on_{}'.format(msg['type']) in self.handler_funcs.keys():
+            self.handler_funcs['on_{}'.format(msg['type'])](ws, msg)
         else:
             logging.warn('Unhandled Resource messsage type: {}'.format(msg['type']))
 
