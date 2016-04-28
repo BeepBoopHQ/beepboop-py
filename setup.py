@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='beepboop',
-    version='0.1.1',
+    version='0.1.2',
     packages=['beepboop'],
     description='Beep Boop client and Bot Manager',
     author='Beep Boop HQ',
